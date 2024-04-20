@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		DA72B6542BD413EF009D3CEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA72B6532BD413EF009D3CEB /* main.cpp */; };
+		DA72B65D2BD41472009D3CEB /* libcppdap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA72B65B2BD41462009D3CEB /* libcppdap.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		DA72B6502BD413EF009D3CEB /* OpenLibertyBasic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenLibertyBasic; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA72B6532BD413EF009D3CEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		DA72B65B2BD41462009D3CEB /* libcppdap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcppdap.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA72B65D2BD41472009D3CEB /* libcppdap.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +44,8 @@
 		DA72B6472BD413EF009D3CEB = {
 			isa = PBXGroup;
 			children = (
+				DA72B65C2BD41472009D3CEB /* Frameworks */,
+				DA72B65A2BD4144B009D3CEB /* libs */,
 				DA72B6522BD413EF009D3CEB /* OpenLibertyBasic */,
 				DA72B6512BD413EF009D3CEB /* Products */,
 			);
@@ -60,6 +65,21 @@
 				DA72B6532BD413EF009D3CEB /* main.cpp */,
 			);
 			path = OpenLibertyBasic;
+			sourceTree = "<group>";
+		};
+		DA72B65A2BD4144B009D3CEB /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				DA72B65B2BD41462009D3CEB /* libcppdap.a */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		DA72B65C2BD41472009D3CEB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -247,6 +267,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QBPW9LPK8E;
 				ENABLE_HARDENED_RUNTIME = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libs",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -257,6 +281,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QBPW9LPK8E;
 				ENABLE_HARDENED_RUNTIME = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/libs",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

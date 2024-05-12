@@ -11,13 +11,13 @@ namespace
 {
 
     // sourceContent holds the synthetic file source.
-    constexpr char sourceContent[] = R"(// Hello Debugger!
-
-This is a synthetic source file provided by the DAP debugger.
-
-You can set breakpoints, and single line step.
-
-You may also notice that the locals contains a single variable for the currently executing line number.)";
+//    constexpr char sourceContent[] = R"(// Hello Debugger!
+//
+//This is a synthetic source file provided by the DAP debugger.
+//
+//You can set breakpoints, and single line step.
+//
+//You may also notice that the locals contains a single variable for the currently executing line number.)";
 
     // Total number of newlines in source.
     constexpr int64_t numSourceLines = 7;

@@ -39,7 +39,7 @@ void Debugger::run()
         {
             _line = l;
             lock.unlock();
-            _onBreakpointHit(EventType::BreakpointHit);
+            _onBreakpointHit();
             return;
         }
     }
@@ -47,7 +47,7 @@ void Debugger::run()
 
 void Debugger::pause()
 {
-    _onPaused(EventType::Paused);
+    _onPaused();
 }
 
 int64_t Debugger::currentLine()
@@ -61,7 +61,7 @@ void Debugger::stepForward()
     std::unique_lock<std::mutex> lock(_mutex);
     _line = (_line % numSourceLines) + 1;
     lock.unlock();
-    _onStepped(EventType::Stepped);
+    _onStepped();
 }
 
 void Debugger::clearBreakpoints()

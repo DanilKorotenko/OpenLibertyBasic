@@ -31,7 +31,9 @@ public:
         Paused
     };
 
-    using EventHandler = std::function<void(EventType)>;
+    using PtrT = std::shared_ptr<Debugger>;
+//    using EventHandler = std::function<void(EventType)>;
+    using EventHandler = std::function<void()>;
 
     Debugger();
 

@@ -5,6 +5,7 @@
 
 #include "debugger.hpp"
 #include "event.hpp"
+#include "controller.hpp"
 
 #include <condition_variable>
 #include <cstdio>
@@ -76,7 +77,7 @@ int main(int, char*[])
     // Construct the debugger.
     Debugger debugger;
     debugger.setPaused(
-        [&](Debugger::EventType onEvent)
+        [&]()
         {
             // The debugger has been suspended. Inform the client.
             dap::StoppedEvent event;
@@ -85,7 +86,7 @@ int main(int, char*[])
             session->send(event);
         });
     debugger.setStepped(
-        [&](Debugger::EventType onEvent)
+        [&]()
         {
             // The debugger has single-line stepped. Inform the client.
             dap::StoppedEvent event;
@@ -94,7 +95,7 @@ int main(int, char*[])
             session->send(event);
         });
     debugger.setPaused(
-        [&](Debugger::EventType onEvent)
+        [&]()
         {
             // The debugger has been suspended. Inform the client.
             dap::StoppedEvent event;

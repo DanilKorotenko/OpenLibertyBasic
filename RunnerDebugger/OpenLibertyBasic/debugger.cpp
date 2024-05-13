@@ -23,8 +23,7 @@ namespace
     constexpr int64_t numSourceLines = 7;
 }
 
-Debugger::Debugger(const EventHandler& onEvent)
-    : _onEvent(onEvent)
+Debugger::Debugger()
 {
 
 }
@@ -40,7 +39,7 @@ void Debugger::run()
         {
             _line = l;
             lock.unlock();
-            _onEvent(EventType::BreakpointHit);
+            _onBreakpointHit(EventType::BreakpointHit);
             return;
         }
     }
@@ -48,7 +47,7 @@ void Debugger::run()
 
 void Debugger::pause()
 {
-    _onEvent(EventType::Paused);
+    _onPaused(EventType::Paused);
 }
 
 int64_t Debugger::currentLine()
@@ -62,7 +61,7 @@ void Debugger::stepForward()
     std::unique_lock<std::mutex> lock(_mutex);
     _line = (_line % numSourceLines) + 1;
     lock.unlock();
-    _onEvent(EventType::Stepped);
+    _onStepped(EventType::Stepped);
 }
 
 void Debugger::clearBreakpoints()
@@ -75,4 +74,19 @@ void Debugger::addBreakpoint(int64_t l)
 {
     std::unique_lock<std::mutex> lock(_mutex);
     this->_breakpoints.emplace(l);
+}
+
+void Debugger::setBreakpointHit(const EventHandler &aBreakpointHit)
+{
+    _onBreakpointHit = aBreakpointHit;
+}
+
+void Debugger::setStepped(const EventHandler &aStepped)
+{
+    _onStepped = aStepped;
+}
+
+void Debugger::setPaused(const EventHandler &aPaused)
+{
+    _onPaused = aPaused;
 }

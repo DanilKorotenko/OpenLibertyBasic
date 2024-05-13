@@ -73,46 +73,36 @@ int main(int, char*[])
     Event configured;
     Event terminate;
 
-    // Event handlers from the Debugger.
-    auto onDebuggerEvent =
+    // Construct the debugger.
+    Debugger debugger;
+    debugger.setPaused(
         [&](Debugger::EventType onEvent)
         {
-            switch (onEvent)
-            {
-                case Debugger::EventType::Stepped:
-                {
-                    // The debugger has single-line stepped. Inform the client.
-                    dap::StoppedEvent event;
-                    event.reason = "step";
-                    event.threadId = threadId;
-                    session->send(event);
-                    break;
-                }
+            // The debugger has been suspended. Inform the client.
+            dap::StoppedEvent event;
+            event.reason = "pause";
+            event.threadId = threadId;
+            session->send(event);
+        });
+    debugger.setStepped(
+        [&](Debugger::EventType onEvent)
+        {
+            // The debugger has single-line stepped. Inform the client.
+            dap::StoppedEvent event;
+            event.reason = "step";
+            event.threadId = threadId;
+            session->send(event);
+        });
+    debugger.setPaused(
+        [&](Debugger::EventType onEvent)
+        {
+            // The debugger has been suspended. Inform the client.
+            dap::StoppedEvent event;
+            event.reason = "pause";
+            event.threadId = threadId;
+            session->send(event);
+        });
 
-                case Debugger::EventType::BreakpointHit:
-                {
-                    // The debugger has hit a breakpoint. Inform the client.
-                    dap::StoppedEvent event;
-                    event.reason = "breakpoint";
-                    event.threadId = threadId;
-                    session->send(event);
-                    break;
-                }
-
-                case Debugger::EventType::Paused:
-                {
-                    // The debugger has been suspended. Inform the client.
-                    dap::StoppedEvent event;
-                    event.reason = "pause";
-                    event.threadId = threadId;
-                    session->send(event);
-                    break;
-                }
-            }
-        };
-
-    // Construct the debugger.
-    Debugger debugger(onDebuggerEvent);
 
     // Handle errors reported by the Session. These errors include protocol
     // parsing errors and receiving messages with no handler.

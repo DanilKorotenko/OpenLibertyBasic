@@ -33,7 +33,7 @@ public:
 
     using EventHandler = std::function<void(EventType)>;
 
-    Debugger(const EventHandler&);
+    Debugger();
 
     // run() instructs the debugger to continue execution.
     void run();
@@ -53,8 +53,15 @@ public:
     // addBreakpoint() sets a new breakpoint on the given line.
     void addBreakpoint(int64_t line);
 
+    void setBreakpointHit(const EventHandler &aBreakpointHit);
+    void setStepped(const EventHandler &aStepped);
+    void setPaused(const EventHandler &aPaused);
+
 private:
-    EventHandler                _onEvent;
+    EventHandler                _onBreakpointHit;
+    EventHandler                _onStepped;
+    EventHandler                _onPaused;
+
     std::mutex                  _mutex;
     int64_t                     _line = 1;
     std::unordered_set<int64_t> _breakpoints;

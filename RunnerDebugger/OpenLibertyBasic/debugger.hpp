@@ -24,8 +24,14 @@
 class Debugger
 {
 public:
-    enum class Event { BreakpointHit, Stepped, Paused };
-    using EventHandler = std::function<void(Event)>;
+    enum class EventType
+    {
+        BreakpointHit,
+        Stepped,
+        Paused
+    };
+
+    using EventHandler = std::function<void(EventType)>;
 
     Debugger(const EventHandler&);
 

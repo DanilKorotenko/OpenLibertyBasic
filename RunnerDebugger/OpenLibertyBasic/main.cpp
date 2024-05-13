@@ -75,11 +75,11 @@ int main(int, char*[])
 
     // Event handlers from the Debugger.
     auto onDebuggerEvent =
-        [&](Debugger::Event onEvent)
+        [&](Debugger::EventType onEvent)
         {
             switch (onEvent)
             {
-                case Debugger::Event::Stepped:
+                case Debugger::EventType::Stepped:
                 {
                     // The debugger has single-line stepped. Inform the client.
                     dap::StoppedEvent event;
@@ -89,7 +89,7 @@ int main(int, char*[])
                     break;
                 }
 
-                case Debugger::Event::BreakpointHit:
+                case Debugger::EventType::BreakpointHit:
                 {
                     // The debugger has hit a breakpoint. Inform the client.
                     dap::StoppedEvent event;
@@ -99,7 +99,7 @@ int main(int, char*[])
                     break;
                 }
 
-                case Debugger::Event::Paused:
+                case Debugger::EventType::Paused:
                 {
                     // The debugger has been suspended. Inform the client.
                     dap::StoppedEvent event;
@@ -220,8 +220,7 @@ int main(int, char*[])
     // single 'Locals' scope.
     // https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Variables
     session->registerHandler(
-        [&](const dap::VariablesRequest& request)
-            -> dap::ResponseOrError<dap::VariablesResponse>
+        [&](const dap::VariablesRequest& request)-> dap::ResponseOrError<dap::VariablesResponse>
             {
                 if (request.variablesReference != variablesReferenceId)
                 {

@@ -39,7 +39,10 @@ void Debugger::run()
         {
             _line = l;
             lock.unlock();
-            _onBreakpointHit();
+            if (auto delegate = _delegate.lock())
+            {
+                delegate->onBreakpointHit();
+            }
             return;
         }
     }
@@ -47,7 +50,10 @@ void Debugger::run()
 
 void Debugger::pause()
 {
-    _onPaused();
+    if (auto delegate = _delegate.lock())
+    {
+        delegate->onPaused();
+    }
 }
 
 int64_t Debugger::currentLine()
@@ -61,7 +67,10 @@ void Debugger::stepForward()
     std::unique_lock<std::mutex> lock(_mutex);
     _line = (_line % numSourceLines) + 1;
     lock.unlock();
-    _onStepped();
+    if (auto delegate = _delegate.lock())
+    {
+        delegate->onStepped();
+    }
 }
 
 void Debugger::clearBreakpoints()
@@ -76,17 +85,7 @@ void Debugger::addBreakpoint(int64_t l)
     this->_breakpoints.emplace(l);
 }
 
-void Debugger::setBreakpointHit(const EventHandler &aBreakpointHit)
+void Debugger::setDelegate(const DebuggerDelegate::WPtrT &aDelegate)
 {
-    _onBreakpointHit = aBreakpointHit;
-}
-
-void Debugger::setStepped(const EventHandler &aStepped)
-{
-    _onStepped = aStepped;
-}
-
-void Debugger::setPaused(const EventHandler &aPaused)
-{
-    _onPaused = aPaused;
+    _delegate = aDelegate;
 }

@@ -19,21 +19,22 @@
 #include <mutex>
 #include <unordered_set>
 
+class DebuggerDelegate
+{
+public:
+    using WPtrT = std::weak_ptr<DebuggerDelegate>;
+
+    virtual void onBreakpointHit() = 0;
+    virtual void onStepped() = 0;
+    virtual void onPaused() = 0;
+};
+
 // Debugger holds the dummy debugger state and fires events to the EventHandler
 // passed to the constructor.
 class Debugger
 {
 public:
-    enum class EventType
-    {
-        BreakpointHit,
-        Stepped,
-        Paused
-    };
-
     using PtrT = std::shared_ptr<Debugger>;
-//    using EventHandler = std::function<void(EventType)>;
-    using EventHandler = std::function<void()>;
 
     Debugger();
 
@@ -55,14 +56,10 @@ public:
     // addBreakpoint() sets a new breakpoint on the given line.
     void addBreakpoint(int64_t line);
 
-    void setBreakpointHit(const EventHandler &aBreakpointHit);
-    void setStepped(const EventHandler &aStepped);
-    void setPaused(const EventHandler &aPaused);
+    void setDelegate(const DebuggerDelegate::WPtrT &aDelegate);
 
 private:
-    EventHandler                _onBreakpointHit;
-    EventHandler                _onStepped;
-    EventHandler                _onPaused;
+    DebuggerDelegate::WPtrT     _delegate;
 
     std::mutex                  _mutex;
     int64_t                     _line = 1;

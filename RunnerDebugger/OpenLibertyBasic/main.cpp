@@ -58,6 +58,8 @@ int main(int, char*[])
     log = dap::file(LOG_TO_FILE);
 #endif
 
+    Controller::PtrT controller = Controller::create();
+
     // Create the DAP session.
     // This is used to implement the DAP server.
     auto session = dap::Session::create();
@@ -75,34 +77,34 @@ int main(int, char*[])
     Event terminate;
 
     // Construct the debugger.
-    Debugger debugger;
-    debugger.setPaused(
-        [&]()
-        {
-            // The debugger has been suspended. Inform the client.
-            dap::StoppedEvent event;
-            event.reason = "pause";
-            event.threadId = threadId;
-            session->send(event);
-        });
-    debugger.setStepped(
-        [&]()
-        {
-            // The debugger has single-line stepped. Inform the client.
-            dap::StoppedEvent event;
-            event.reason = "step";
-            event.threadId = threadId;
-            session->send(event);
-        });
-    debugger.setPaused(
-        [&]()
-        {
-            // The debugger has been suspended. Inform the client.
-            dap::StoppedEvent event;
-            event.reason = "pause";
-            event.threadId = threadId;
-            session->send(event);
-        });
+//    Debugger debugger;
+//    debugger.setPaused(
+//        [&]()
+//        {
+//            // The debugger has been suspended. Inform the client.
+//            dap::StoppedEvent event;
+//            event.reason = "pause";
+//            event.threadId = threadId;
+//            session->send(event);
+//        });
+//    debugger.setStepped(
+//        [&]()
+//        {
+//            // The debugger has single-line stepped. Inform the client.
+//            dap::StoppedEvent event;
+//            event.reason = "step";
+//            event.threadId = threadId;
+//            session->send(event);
+//        });
+//    debugger.setPaused(
+//        [&]()
+//        {
+//            // The debugger has been suspended. Inform the client.
+//            dap::StoppedEvent event;
+//            event.reason = "pause";
+//            event.threadId = threadId;
+//            session->send(event);
+//        });
 
 
     // Handle errors reported by the Session. These errors include protocol
@@ -172,7 +174,7 @@ int main(int, char*[])
                 source.name = "HelloDebuggerSource";
 
                 dap::StackFrame frame;
-                frame.line = debugger.currentLine();
+//                frame.line = debugger.currentLine();
                 frame.column = 1;
                 frame.name = "HelloDebugger";
                 frame.id = frameId;
@@ -221,7 +223,7 @@ int main(int, char*[])
 
                 dap::Variable currentLineVar;
                 currentLineVar.name = "currentLine";
-                currentLineVar.value = std::to_string(debugger.currentLine());
+//                currentLineVar.value = std::to_string(debugger.currentLine());
                 currentLineVar.type = "int";
 
                 dap::VariablesResponse response;
@@ -235,7 +237,7 @@ int main(int, char*[])
     session->registerHandler(
         [&](const dap::PauseRequest&)
         {
-            debugger.pause();
+//            debugger.pause();
             return dap::PauseResponse();
         });
 
@@ -245,7 +247,7 @@ int main(int, char*[])
     session->registerHandler(
         [&](const dap::ContinueRequest&)
         {
-            debugger.run();
+//            debugger.run();
             return dap::ContinueResponse();
         });
 
@@ -255,7 +257,7 @@ int main(int, char*[])
     session->registerHandler(
         [&](const dap::NextRequest&)
         {
-            debugger.stepForward();
+//            debugger.stepForward();
             return dap::NextResponse();
         });
 
@@ -265,7 +267,7 @@ int main(int, char*[])
         [&](const dap::StepInRequest&)
         {
             // Step-in treated as step-over as there's only one stack frame.
-            debugger.stepForward();
+//            debugger.stepForward();
             return dap::StepInResponse();
         });
 
@@ -291,11 +293,11 @@ int main(int, char*[])
             auto breakpoints = request.breakpoints.value({});
             if (request.source.sourceReference.value(0) == sourceReferenceId)
             {
-                debugger.clearBreakpoints();
+//                debugger.clearBreakpoints();
                 response.breakpoints.resize(breakpoints.size());
                 for (size_t i = 0; i < breakpoints.size(); i++)
                 {
-                    debugger.addBreakpoint(breakpoints[i].line);
+//                    debugger.addBreakpoint(breakpoints[i].line);
                     response.breakpoints[i].verified = breakpoints[i].line < numSourceLines;
                 }
             }
@@ -393,7 +395,7 @@ int main(int, char*[])
 
     // Start the debugger in a paused state.
     // This sends a stopped event to the client.
-    debugger.pause();
+//    debugger.pause();
 
     // Block until we receive a 'terminateDebuggee' request or encounter a session
     // error.

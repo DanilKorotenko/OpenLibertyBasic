@@ -14,10 +14,22 @@
 #include "dap/protocol.h"
 #include "dap/session.h"
 
-class Controller
+#include "debugger.hpp"
+
+class Controller : public DebuggerDelegate
 {
 public:
-    
+    using PtrT = std::shared_ptr<Controller>;
+    static PtrT create();
+
+    Controller();
+
+    void onBreakpointHit();
+    void onStepped();
+    void onPaused();
+
+private:
+    Debugger::PtrT _debugger;
 };
 
 #endif /* controller_hpp */

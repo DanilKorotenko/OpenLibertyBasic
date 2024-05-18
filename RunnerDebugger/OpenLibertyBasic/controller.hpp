@@ -15,6 +15,7 @@
 #include "dap/session.h"
 
 #include "debugger.hpp"
+#include "event.hpp"
 
 class Controller : public DebuggerDelegate
 {
@@ -23,13 +24,29 @@ public:
     static PtrT create();
 
     Controller();
+    ~Controller();
+
+    void waitConfigured();
+    void threadStarted();
+    void pause();
+    void waitTerminate();
+
+private:
+    void init();
 
     void onBreakpointHit();
     void onStepped();
     void onPaused();
 
+    void onSessionError(const char *msg);
+
 private:
-    Debugger::PtrT _debugger;
+    Debugger::PtrT                  _debugger;
+    std::unique_ptr<dap::Session>   _session;
+    Event                           _configured;
+    Event                           _terminate;
+    std::shared_ptr<dap::Writer>    _log;
+
 };
 
 #endif /* controller_hpp */

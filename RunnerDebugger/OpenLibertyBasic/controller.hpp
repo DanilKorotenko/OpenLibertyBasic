@@ -46,7 +46,7 @@ private:
     Event                           _configured;
     Event                           _terminate;
     std::shared_ptr<dap::Writer>    _log;
-
+    FILE*                           _dapSocketFile;
 };
 
 #endif /* controller_hpp */

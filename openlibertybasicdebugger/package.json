@@ -15,11 +15,114 @@
     "main": "./extension.js",
     "contributes": 
     {
+        "breakpoints": [{ "language": "libertybasic" }],
+        "debuggers": 
+        [
+            {
+                "type": "OpenLibertyBasicDebugger",
+                "label": "Liberty Basic Debug",
+                "osx": 
+                {
+                    "program": "../RunnerDebugger/DerivedData/OpenLibertyBasic/Build/Products/Debug/OpenLibertyBasic"
+                },
+                "configurationAttributes": 
+                {
+                    "launch": 
+                    {
+                        "required": ["program"],
+                        "properties": 
+                        {
+                            "program": 
+                            {
+                                "type": "string",
+                                "description": "Absolute path to a text file.",
+                                "default": "${workspaceFolder}/${command:AskForProgramName}"
+                            },
+                            "stopOnEntry": 
+                            {
+                                "type": "boolean",
+                                "description": "Automatically stop after launch.",
+                                "default": true
+                            }
+                        }
+                    }
+                },
+                "initialConfigurations": 
+                [
+                    {
+                        "type": "OpenLibertyBasicDebugger",
+                        "request": "launch",
+                        "name": "Ask for file name",
+                        "program": "${workspaceFolder}/${command:AskForProgramName}",
+                        "stopOnEntry": true
+                    }
+                ],
+                "configurationSnippets": 
+                [
+                    {
+                        "label": "Liberty Basic Debug: Launch",
+                        "description": "A new configuration for launching a Liberty Basic debug program",
+                        "body": 
+                        {
+                            "type": "OpenLibertyBasicDebugger",
+                            "request": "launch",
+                            "name": "${2:Launch Program}",
+                            "program": "^\"\\${workspaceFolder}/${1:Program}\""
+                        }
+                    }
+                ],
+                "variables": 
+                {
+                    "AskForProgramName": "openlibertybasicdebugger.getProgramName"
+                }
+            }
+        ],
+        "menus": 
+        {
+            "editor/title/run": 
+            [
+                {
+                    "command": "openlibertybasicdebugger.runEditorContents",
+                    "when": "resourceLangId == libertybasic",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "openlibertybasicdebugger.debugEditorContents",
+                    "when": "resourceLangId == libertybasic",
+                    "group": "navigation@2"
+                }
+            ],
+            "commandPalette": 
+            [
+                {
+                    "command": "openlibertybasicdebugger.debugEditorContents",
+                    "when": "resourceLangId == libertybasic"
+                },
+                {
+                    "command": "openlibertybasicdebugger.runEditorContents",
+                    "when": "resourceLangId == libertybasic"
+                }
+            ]
+        },
         "commands": 
         [
             {
                 "command": "openlibertybasicdebugger.helloWorld",
                 "title": "Hello World"
+            },
+            {
+                "command": "openlibertybasicdebugger.debugEditorContents",
+                "title": "Debug File",
+                "category": "OpenLibertyBasic Debug",
+                "enablement": "!inDebugMode",
+                "icon": "$(debug-alt)"
+            },
+            {
+                "command": "openlibertybasicdebugger.runEditorContents",
+                "title": "Run File",
+                "category": "OpenLibertyBasic Debug",
+                "enablement": "!inDebugMode",
+                "icon": "$(play)"
             }
         ]
     },

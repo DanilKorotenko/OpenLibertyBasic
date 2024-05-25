@@ -1,19 +1,23 @@
 {
-	"env": {
+	"env": 
+	{
 		"browser": false,
 		"commonjs": true,
 		"es6": true,
 		"node": true,
 		"mocha": true
 	},
-	"parserOptions": {
+	"parserOptions": 
+	{
 		"ecmaVersion": 2018,
-		"ecmaFeatures": {
+		"ecmaFeatures": 
+		{
 			"jsx": true
 		},
 		"sourceType": "module"
 	},
-	"rules": {
+	"rules": 
+	{
 		"no-const-assign": "warn",
 		"no-this-before-super": "warn",
 		"no-undef": "warn",

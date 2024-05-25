@@ -12,7 +12,7 @@
       "Debuggers"
     ],
     "activationEvents": [],
-    "main": "./extension.js",
+    "main": "./src/extension.js",
     "contributes": 
     {
         "breakpoints": [{ "language": "libertybasic" }],

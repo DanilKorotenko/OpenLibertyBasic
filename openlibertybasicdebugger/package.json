@@ -107,10 +107,6 @@
         "commands": 
         [
             {
-                "command": "openlibertybasicdebugger.helloWorld",
-                "title": "Hello World"
-            },
-            {
                 "command": "openlibertybasicdebugger.debugEditorContents",
                 "title": "Debug File",
                 "category": "OpenLibertyBasic Debug",

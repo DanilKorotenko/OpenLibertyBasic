@@ -1,14 +1,4 @@
 const vscode = require('vscode');
-// const DebugAdapterDescriptorFactory = require('./debugAdapterDescriptorFactory');
-
-// class DebugAdapterDescriptorFactory extends vscode.DebugAdapterDescriptorFactory
-// {
-//     createDebugAdapterDescriptor(session, executable)
-//     {
-//         return executable;
-//     }
-// }
-
 
 function getProgramName()
 {
@@ -72,9 +62,6 @@ function activate(context)
 		vscode.commands.registerCommand('openlibertybasicdebugger.runEditorContents', 	runEditorContents),
 		vscode.commands.registerCommand('openlibertybasicdebugger.debugEditorContents', debugEditorContents),
 	);
-
-	// context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory('OpenLibertyBasicDebugger', DebugAdapterDescriptorFactory));
-
 }
 
 // This method is called when your extension is deactivated

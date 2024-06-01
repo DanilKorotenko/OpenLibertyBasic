@@ -40,13 +40,13 @@ private:
 
     void onSessionError(const char *msg);
 
+    void output(const char *msg);
+
 private:
     Debugger::PtrT                  _debugger;
     std::unique_ptr<dap::Session>   _session;
     Event                           _configured;
     Event                           _terminate;
-    std::shared_ptr<dap::Writer>    _log;
-    FILE*                           _dapSocketFile;
 };
 
 #endif /* controller_hpp */

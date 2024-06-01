@@ -6,8 +6,10 @@
 //
 
 #include "controller.hpp"
-//#include <os/log.h>\''\}
 
+#include <sstream>
+
+#include <dap/typeof.h>
 
 const dap::integer threadId = 100;
 const dap::integer frameId = 200;
@@ -20,6 +22,8 @@ namespace
     // sourceContent holds the synthetic file source.
     constexpr char sourceContent[] = R"(// Hello Debugger!
 
+test test test
+
 This is a synthetic source file provided by the DAP debugger.
 
 You can set breakpoints, and single line step.
@@ -30,6 +34,26 @@ You may also notice that the locals contains a single variable for the currently
     constexpr int64_t numSourceLines = 7;
 
 }  // anonymous namespace
+
+namespace dap {
+
+// Naming of this class follows the naming convention followed in DAP specification. These names map
+// to the strings using in the launch request and hence will have to be in camel case as used here.
+class LaunchRequestLibertyBasic : public LaunchRequest
+{
+public:
+    string program;
+};
+
+DAP_DECLARE_STRUCT_TYPEINFO(LaunchRequestLibertyBasic);
+
+
+DAP_IMPLEMENT_STRUCT_TYPEINFO_EXT(LaunchRequestLibertyBasic, LaunchRequest, "launch",
+    DAP_FIELD(program, "program"))
+
+
+}  // namespace dap
+
 
 
 Controller::PtrT Controller::create()
@@ -47,23 +71,16 @@ Controller::Controller()
     , _session(dap::Session::create())
     , _configured()
     , _terminate()
-    , _log(dap::file("log.log"))
 {
 }
 
 Controller::~Controller()
 {
-    if (_dapSocketFile)
-    {
-        fclose(_dapSocketFile);
-    }
 }
 
 
 void Controller::init()
 {
-//    dap::writef(_log, "init()\n");
-
     _session->onError(std::bind(&Controller::onSessionError, this, std::placeholders::_1));
 
     // The Initialize request is the first message sent from the client and
@@ -72,12 +89,8 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::InitializeRequest&)
         {
-//            os_log_debug(OS_LOG_DEFAULT, "InitializeRequest");
-//            dap::writef(_log, "InitializeRequest\n");
-
             dap::InitializeResponse response;
             response.supportsConfigurationDoneRequest = true;
-//            os_log_debug(OS_LOG_DEFAULT, "InitializeResponse");
             return response;
         });
 
@@ -89,8 +102,6 @@ void Controller::init()
     _session->registerSentHandler(
         [&](const dap::ResponseOrError<dap::InitializeResponse>&)
         {
-//            dap::writef(_log, "InitializedEvent\n");
-
             _session->send(dap::InitializedEvent());
         });
 
@@ -100,8 +111,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::ThreadsRequest&)
         {
-//            dap::writef(_log, "ThreadsRequest\n");
-
             dap::ThreadsResponse response;
             dap::Thread thread;
             thread.id = threadId;
@@ -118,8 +127,6 @@ void Controller::init()
         [&](const dap::StackTraceRequest& request)
             -> dap::ResponseOrError<dap::StackTraceResponse>
             {
-//                dap::writef(_log, "StackTraceRequest\n");
-
                 if (request.threadId != threadId)
                 {
                     return dap::Error("Unknown threadId '%d'", int(request.threadId));
@@ -149,8 +156,6 @@ void Controller::init()
         [&](const dap::ScopesRequest& request)
             -> dap::ResponseOrError<dap::ScopesResponse>
             {
-//                dap::writef(_log, "ScopesRequest\n");
-
                 if (request.frameId != frameId)
                 {
                     return dap::Error("Unknown frameId '%d'", int(request.frameId));
@@ -173,8 +178,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::VariablesRequest& request)-> dap::ResponseOrError<dap::VariablesResponse>
             {
-//                dap::writef(_log, "VariablesRequest\n");
-
                 if (request.variablesReference != variablesReferenceId)
                 {
                     return dap::Error("Unknown variablesReference '%d'",
@@ -197,8 +200,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::PauseRequest&)
         {
-            dap::writef(_log, "PauseRequest\n");
-
             _debugger->pause();
             return dap::PauseResponse();
         });
@@ -209,7 +210,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::ContinueRequest&)
         {
-//            dap::writef(_log, "ContinueRequest\n");
             _debugger->run();
             return dap::ContinueResponse();
         });
@@ -220,7 +220,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::NextRequest&)
         {
-//            dap::writef(_log, "NextRequest\n");
             _debugger->stepForward();
             return dap::NextResponse();
         });
@@ -230,7 +229,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::StepInRequest&)
         {
-//            dap::writef(_log, "StepInRequest\n");
             // Step-in treated as step-over as there's only one stack frame.
             _debugger->stepForward();
             return dap::StepInResponse();
@@ -242,8 +240,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::StepOutRequest&)
         {
-//            dap::writef(_log, "StepOutRequest\n");
-
             // Step-out is not supported as there's only one stack frame.
             return dap::StepOutResponse();
         });
@@ -255,7 +251,7 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::SetBreakpointsRequest& request)
         {
-//            dap::writef(_log, "SetBreakpointsRequest\n");
+            output("set breakpoint");
 
             dap::SetBreakpointsResponse response;
 
@@ -285,8 +281,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::SetExceptionBreakpointsRequest&)
         {
-//            dap::writef(_log, "SetExceptionBreakpointsRequest\n");
-
             return dap::SetExceptionBreakpointsResponse();
         });
 
@@ -297,11 +291,8 @@ void Controller::init()
         [&](const dap::SourceRequest& request)
             -> dap::ResponseOrError<dap::SourceResponse>
             {
-//                dap::writef(_log, "SourceRequest\n");
-
                 if (request.sourceReference != sourceReferenceId)
                 {
-//                    dap::writef(_log, "Unknown source reference\n");
                     return dap::Error("Unknown source reference '%d'",
                         int(request.sourceReference));
                 }
@@ -316,9 +307,12 @@ void Controller::init()
     // This example debugger does nothing with this request.
     // https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Launch
     _session->registerHandler(
-        [&](const dap::LaunchRequest&)
+        [&](const dap::LaunchRequestLibertyBasic &request)
         {
-//            dap::writef(_log, "LaunchRequest\n");
+            output("Start debugging\n");
+            std::stringstream ss;
+            ss << "Program : " << request.program << "\n";
+            output(ss.str().c_str());
 
             return dap::LaunchResponse();
         });
@@ -327,8 +321,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::DisconnectRequest& request)
         {
-//            dap::writef(_log, "DisconnectRequest\n");
-
             if (request.terminateDebuggee.value(false))
             {
                 _terminate.fire();
@@ -343,8 +335,6 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::ConfigurationDoneRequest&)
         {
-//            dap::writef(_log, "ConfigurationDoneRequest\n");
-
             _configured.fire();
             return dap::ConfigurationDoneResponse();
         });
@@ -353,19 +343,10 @@ void Controller::init()
     // We now bind the session to stdin and stdout to connect to the client.
     // After the call to bind() we should start receiving requests, starting with
     // the Initialize request.
-    _dapSocketFile = fopen("/tmp/openLibertyBasickDAP", "w+");
 
-    std::shared_ptr<dap::Reader> in = dap::file(_dapSocketFile, false);
-    std::shared_ptr<dap::Writer> out = dap::file(_dapSocketFile, false);
-//    if (_log)
-//    {
-//        _session->bind(spy(in, _log), spy(out, _log));
-//    }
-//    else
-//    {
-        _session->bind(in, out);
-//    }
-
+    std::shared_ptr<dap::Reader> in = dap::file(stdin, false);
+    std::shared_ptr<dap::Writer> out = dap::file(stdout, false);
+    _session->bind(in, out);
 }
 
 void Controller::onBreakpointHit()
@@ -379,6 +360,7 @@ void Controller::onBreakpointHit()
 
 void Controller::onStepped()
 {
+    output("stepped");
     // The debugger has single-line stepped. Inform the client.
     dap::StoppedEvent event;
     event.reason = "step";
@@ -397,12 +379,14 @@ void Controller::onPaused()
 
 void Controller::onSessionError(const char *msg)
 {
-    if (_log)
-    {
-//        dap::writef(_log, "dap::Session error: %s\n", msg);
-        _log->close();
-    }
     _terminate.fire();
+}
+
+void Controller::output(const char *msg)
+{
+    dap::OutputEvent outputEvent;
+    outputEvent.output = msg;
+    _session->send(outputEvent);
 }
 
 void Controller::waitConfigured()
@@ -428,16 +412,3 @@ void Controller::waitTerminate()
 {
     _terminate.wait();
 }
-
-
-/*
-
-    // Start the debugger in a paused state.
-    // This sends a stopped event to the client.
-//    debugger.pause();
-
-    // Block until we receive a 'terminateDebuggee' request or encounter a session
-    // error.
-    terminate.wait();
-
-*/

@@ -317,6 +317,15 @@ void Controller::init()
             return dap::LaunchResponse();
         });
 
+    _session->registerHandler(
+        [&](const dap::EvaluateRequest &request)
+        {
+            std::stringstream ss;
+            ss << "Evaluate request: " << request.expression << "\n";
+            output(ss.str().c_str());
+            return dap::EvaluateResponse();
+        });
+
     // Handler for disconnect requests
     _session->registerHandler(
         [&](const dap::DisconnectRequest& request)
@@ -338,6 +347,7 @@ void Controller::init()
             _configured.fire();
             return dap::ConfigurationDoneResponse();
         });
+
 
     // All the handlers we care about have now been registered.
     // We now bind the session to stdin and stdout to connect to the client.

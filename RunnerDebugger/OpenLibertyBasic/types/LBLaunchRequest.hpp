@@ -20,6 +20,7 @@ class LBLaunchRequest : public LaunchRequest
 {
 public:
     string program;
+    boolean stopOnEntry;
 };
 
 DAP_DECLARE_STRUCT_TYPEINFO(LBLaunchRequest);

@@ -10,9 +10,7 @@
 
 #include <stdio.h>
 
-#include "dap/io.h"
 #include "dap/protocol.h"
-#include "dap/session.h"
 
 #include <condition_variable>
 #include <cstdio>

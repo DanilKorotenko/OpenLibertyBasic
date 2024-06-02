@@ -7,6 +7,8 @@
 
 #include "debugger.hpp"
 
+#include <fstream>
+
 namespace
 {
 
@@ -24,6 +26,9 @@ namespace
 }
 
 Debugger::Debugger()
+    : _mutex()
+    , _line(0)
+    , _breakpoints()
 {
 
 }

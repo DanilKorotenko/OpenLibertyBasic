@@ -35,27 +35,6 @@ You may also notice that the locals contains a single variable for the currently
 
 }  // anonymous namespace
 
-namespace dap {
-
-// Naming of this class follows the naming convention followed in DAP specification. These names map
-// to the strings using in the launch request and hence will have to be in camel case as used here.
-class LaunchRequestLibertyBasic : public LaunchRequest
-{
-public:
-    string program;
-};
-
-DAP_DECLARE_STRUCT_TYPEINFO(LaunchRequestLibertyBasic);
-
-
-DAP_IMPLEMENT_STRUCT_TYPEINFO_EXT(LaunchRequestLibertyBasic, LaunchRequest, "launch",
-    DAP_FIELD(program, "program"))
-
-
-}  // namespace dap
-
-
-
 Controller::PtrT Controller::create()
 {
     Controller::PtrT result = std::make_shared<Controller>();
@@ -299,7 +278,7 @@ void Controller::init()
     // This example debugger does nothing with this request.
     // https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Launch
     _session->registerHandler(
-        [&](const dap::LaunchRequestLibertyBasic &request)
+        [&](const dap::LBLaunchRequest &request)
         {
             output("Start debugging\n");
             std::stringstream ss;

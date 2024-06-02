@@ -17,6 +17,8 @@
 #include "debugger.hpp"
 #include "event.hpp"
 
+#include "types/LBLaunchRequest.hpp"
+
 class Controller : public DebuggerDelegate
 {
 public:

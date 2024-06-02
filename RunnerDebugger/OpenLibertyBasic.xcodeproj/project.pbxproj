@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		DA000D2F2BF2754300BAE1BE /* controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA000D2D2BF2754300BAE1BE /* controller.cpp */; };
+		DA2D1FDB2C0CA568003D37C9 /* LBLaunchRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA2D1FD92C0CA568003D37C9 /* LBLaunchRequest.cpp */; };
 		DA72B6542BD413EF009D3CEB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA72B6532BD413EF009D3CEB /* main.cpp */; };
 		DA7D4B072BD415EC007C646B /* libcppdap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA7D4B052BD415EC007C646B /* libcppdap.a */; };
 		DA7D4B0A2BD416EE007C646B /* debugger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7D4B082BD416EE007C646B /* debugger.cpp */; };
@@ -29,6 +30,8 @@
 /* Begin PBXFileReference section */
 		DA000D2D2BF2754300BAE1BE /* controller.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = controller.cpp; sourceTree = "<group>"; };
 		DA000D2E2BF2754300BAE1BE /* controller.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = controller.hpp; sourceTree = "<group>"; };
+		DA2D1FD92C0CA568003D37C9 /* LBLaunchRequest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LBLaunchRequest.cpp; sourceTree = "<group>"; };
+		DA2D1FDA2C0CA568003D37C9 /* LBLaunchRequest.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LBLaunchRequest.hpp; sourceTree = "<group>"; };
 		DA72B6502BD413EF009D3CEB /* OpenLibertyBasic */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OpenLibertyBasic; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA72B6532BD413EF009D3CEB /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DA7D4AF52BD415EC007C646B /* any.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = any.h; sourceTree = "<group>"; };
@@ -64,6 +67,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DA2D1FD82C0CA527003D37C9 /* types */ = {
+			isa = PBXGroup;
+			children = (
+				DA2D1FD92C0CA568003D37C9 /* LBLaunchRequest.cpp */,
+				DA2D1FDA2C0CA568003D37C9 /* LBLaunchRequest.hpp */,
+			);
+			path = types;
+			sourceTree = "<group>";
+		};
 		DA72B6472BD413EF009D3CEB = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +97,7 @@
 		DA72B6522BD413EF009D3CEB /* OpenLibertyBasic */ = {
 			isa = PBXGroup;
 			children = (
+				DA2D1FD82C0CA527003D37C9 /* types */,
 				DA7D4B082BD416EE007C646B /* debugger.cpp */,
 				DA7D4B092BD416EE007C646B /* debugger.hpp */,
 				DA72B6532BD413EF009D3CEB /* main.cpp */,
@@ -209,6 +222,7 @@
 				DA7D4B0A2BD416EE007C646B /* debugger.cpp in Sources */,
 				DA7D4B0D2BD51F97007C646B /* event.cpp in Sources */,
 				DA72B6542BD413EF009D3CEB /* main.cpp in Sources */,
+				DA2D1FDB2C0CA568003D37C9 /* LBLaunchRequest.cpp in Sources */,
 				DA000D2F2BF2754300BAE1BE /* controller.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

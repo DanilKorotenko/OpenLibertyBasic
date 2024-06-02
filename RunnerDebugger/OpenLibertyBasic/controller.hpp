@@ -45,6 +45,7 @@ private:
     void output(const char *msg);
 
     dap::InitializeResponse initializeRequest(const dap::InitializeRequest&);
+    dap::LaunchResponse launchRequest(const dap::LBLaunchRequest &request);
 
 private:
     Debugger::PtrT                  _debugger;

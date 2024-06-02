@@ -76,6 +76,9 @@ void Controller::init()
             _session->send(dap::InitializedEvent());
         });
 
+    _session->registerHandler([&](const dap::LBLaunchRequest &request)
+        { return launchRequest(request); });
+
     // The Threads request queries the debugger's list of active threads.
     // This example debugger only exposes a single thread.
     // https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Threads
@@ -273,21 +276,6 @@ void Controller::init()
                 return response;
             });
 
-    // The Launch request is made when the client instructs the debugger adapter
-    // to start the debuggee. This request contains the launch arguments.
-    // This example debugger does nothing with this request.
-    // https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Launch
-    _session->registerHandler(
-        [&](const dap::LBLaunchRequest &request)
-        {
-            output("Start debugging\n");
-            std::stringstream ss;
-            ss << "Program : " << request.program << "\n";
-            output(ss.str().c_str());
-
-            return dap::LaunchResponse();
-        });
-
     _session->registerHandler(
         [&](const dap::EvaluateRequest &request)
         {
@@ -402,4 +390,14 @@ dap::InitializeResponse Controller::initializeRequest(const dap::InitializeReque
     dap::InitializeResponse response;
     response.supportsConfigurationDoneRequest = true;
     return response;
+}
+
+dap::LaunchResponse Controller::launchRequest(const dap::LBLaunchRequest &request)
+{
+    output("Start debugging\n");
+    std::stringstream ss;
+    ss << "Program : " << request.program << "\n";
+    output(ss.str().c_str());
+
+    return dap::LaunchResponse();
 }

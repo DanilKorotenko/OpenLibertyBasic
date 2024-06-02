@@ -42,6 +42,8 @@ private:
 
     void output(const char *msg);
 
+    dap::InitializeResponse initializeRequest(const dap::InitializeRequest&);
+
 private:
     Debugger::PtrT                  _debugger;
     std::unique_ptr<dap::Session>   _session;

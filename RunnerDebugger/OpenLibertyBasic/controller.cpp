@@ -83,16 +83,8 @@ void Controller::init()
 {
     _session->onError(std::bind(&Controller::onSessionError, this, std::placeholders::_1));
 
-    // The Initialize request is the first message sent from the client and
-    // the response reports debugger capabilities.
-    // https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Initialize
-    _session->registerHandler(
-        [&](const dap::InitializeRequest&)
-        {
-            dap::InitializeResponse response;
-            response.supportsConfigurationDoneRequest = true;
-            return response;
-        });
+    _session->registerHandler([&](const dap::InitializeRequest &request)
+        { return initializeRequest(request); });
 
     // When the Initialize response has been sent, we need to send the initialized
     // event.
@@ -421,4 +413,14 @@ void Controller::pause()
 void Controller::waitTerminate()
 {
     _terminate.wait();
+}
+
+// The Initialize request is the first message sent from the client and
+// the response reports debugger capabilities.
+// https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Initialize
+dap::InitializeResponse Controller::initializeRequest(const dap::InitializeRequest&)
+{
+    dap::InitializeResponse response;
+    response.supportsConfigurationDoneRequest = true;
+    return response;
 }

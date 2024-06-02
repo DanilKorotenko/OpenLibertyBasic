@@ -16,6 +16,7 @@
 #include <cstdio>
 #include <mutex>
 #include <unordered_set>
+#include <filesystem>
 
 class DebuggerDelegate
 {

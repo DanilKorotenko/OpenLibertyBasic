@@ -42,7 +42,7 @@ private:
 
     void onSessionError(const char *msg);
 
-    void output(const char *msg);
+    void output(const std::string msg, ...);
 
     dap::InitializeResponse initializeRequest(const dap::InitializeRequest&);
     dap::LaunchResponse launchRequest(const dap::LBLaunchRequest &request);

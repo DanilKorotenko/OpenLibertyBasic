@@ -279,9 +279,7 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::EvaluateRequest &request)
         {
-            std::stringstream ss;
-            ss << "Evaluate request: " << request.expression << "\n";
-            output(ss.str().c_str());
+            output("Evaluate request: %s\n", request.expression.c_str());
             return dap::EvaluateResponse();
         });
 
@@ -351,10 +349,29 @@ void Controller::onSessionError(const char *msg)
     _terminate.fire();
 }
 
-void Controller::output(const char *msg)
+void Controller::output(const std::string msg, ...)
 {
+    va_list                 args;
+    std::unique_ptr<char[]> formattedOutput;
+
+    int size         = 0;
+    int requiredSize = static_cast<int>(msg.size());
+
+    do
+    {
+        size += abs(requiredSize - size + 1);
+        formattedOutput.reset(new char[size]);
+
+        strcpy(formattedOutput.get(), msg.c_str());
+        va_start(args, msg);
+        requiredSize = vsnprintf(&formattedOutput[0], static_cast<size_t>(size), msg.c_str(), args);
+        va_end(args);
+
+    }
+    while (requiredSize < 0 || requiredSize >= size);
+
     dap::OutputEvent outputEvent;
-    outputEvent.output = msg;
+    outputEvent.output = std::string(formattedOutput.get());
     _session->send(outputEvent);
 }
 
@@ -395,9 +412,7 @@ dap::InitializeResponse Controller::initializeRequest(const dap::InitializeReque
 dap::LaunchResponse Controller::launchRequest(const dap::LBLaunchRequest &request)
 {
     output("Start debugging\n");
-    std::stringstream ss;
-    ss << "Program : " << request.program << "\n";
-    output(ss.str().c_str());
+    output("Program: %s", request.program.c_str());
 
     return dap::LaunchResponse();
 }

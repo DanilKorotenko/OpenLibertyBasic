@@ -12,15 +12,6 @@
 namespace
 {
 
-    // sourceContent holds the synthetic file source.
-//    constexpr char sourceContent[] = R"(// Hello Debugger!
-//
-//This is a synthetic source file provided by the DAP debugger.
-//
-//You can set breakpoints, and single line step.
-//
-//You may also notice that the locals contains a single variable for the currently executing line number.)";
-
     // Total number of newlines in source.
     constexpr int64_t numSourceLines = 7;
 }
@@ -29,6 +20,8 @@ Debugger::Debugger()
     : _mutex()
     , _line(0)
     , _breakpoints()
+    , _sourcePath()
+    , _sourceContent()
 {
 
 }
@@ -67,6 +60,11 @@ int64_t Debugger::currentLine()
     return _line;
 }
 
+std::string Debugger::getSourceContent()
+{
+    return _sourceContent;
+}
+
 void Debugger::stepForward()
 {
     std::unique_lock<std::mutex> lock(_mutex);
@@ -93,4 +91,31 @@ void Debugger::addBreakpoint(int64_t l)
 void Debugger::setDelegate(const DebuggerDelegate::WPtrT &aDelegate)
 {
     _delegate = aDelegate;
+}
+
+void Debugger::launch(const std::string &aSourcePath, bool aStopOnNetry)
+{
+    loadSourceAtPath(aSourcePath);
+    start(aStopOnNetry);
+}
+
+bool Debugger::loadSourceAtPath(const std::string &aSourcePath)
+{
+    _sourcePath = aSourcePath;
+
+    std::ifstream sourceFile(aSourcePath, std::ios::in);
+    if (!sourceFile.is_open())
+    {
+        return false;
+    }
+    _sourceContent = std::string(std::istreambuf_iterator<char>(sourceFile), std::istreambuf_iterator<char>());
+    sourceFile.close();
+
+    return true;
+}
+
+void Debugger::start(bool aStopOnNetry)
+{
+    _line = 1;
+
 }

@@ -19,17 +19,6 @@ const dap::integer sourceReferenceId = 400;
 namespace
 {
 
-    // sourceContent holds the synthetic file source.
-    constexpr char sourceContent[] = R"(// Hello Debugger!
-
-test test test
-
-This is a synthetic source file provided by the DAP debugger.
-
-You can set breakpoints, and single line step.
-
-You may also notice that the locals contains a single variable for the currently executing line number.)";
-
     // Total number of newlines in source.
     constexpr int64_t numSourceLines = 7;
 
@@ -272,7 +261,7 @@ void Controller::init()
                 }
 
                 dap::SourceResponse response;
-                response.content = sourceContent;
+                response.content = _debugger->getSourceContent();
                 return response;
             });
 
@@ -413,6 +402,8 @@ dap::LaunchResponse Controller::launchRequest(const dap::LBLaunchRequest &reques
 {
     output("Start debugging\n");
     output("Program: %s", request.program.c_str());
+
+    _debugger->launch(request.program.c_str(), request.stopOnEntry);
 
     return dap::LaunchResponse();
 }

@@ -45,6 +45,8 @@ public:
 
     // currentLine() returns the currently executing line number.
     int64_t currentLine();
+    int getSourceReferenceId();
+    std::string getSourceContent();
 
     // stepForward() instructs the debugger to step forward one line.
     void stepForward();
@@ -57,11 +59,20 @@ public:
 
     void setDelegate(const DebuggerDelegate::WPtrT &aDelegate);
 
+    void launch(const std::string &aSourcePath, bool aStopOnNetry);
+    void start(bool aStopOnNetry);
+
+    bool loadSourceAtPath(const std::string &aSourcePath);
+
 private:
     DebuggerDelegate::WPtrT     _delegate;
 
     std::mutex                  _mutex;
+
     int64_t                     _line = 1;
+    std::filesystem::path       _sourcePath;
+    std::string                 _sourceContent;
+
     std::unordered_set<int64_t> _breakpoints;
 };
 

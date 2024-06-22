@@ -35,8 +35,6 @@ int main(int, char*[])
 
     controller->waitConfigured();
 
-    controller->threadStarted();
-
     controller->pause();
 
     controller->waitTerminate();

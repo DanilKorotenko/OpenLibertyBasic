@@ -26,6 +26,8 @@ public:
     virtual void onBreakpointHit() = 0;
     virtual void onStepped() = 0;
     virtual void onPaused() = 0;
+    virtual void threadStarted(int64_t aThreadId) = 0;
+
 };
 
 // Debugger holds the dummy debugger state and fires events to the EventHandler
@@ -64,6 +66,10 @@ public:
 
     bool loadSourceAtPath(const std::string &aSourcePath);
 
+    std::vector<dap::Thread> getThreads();
+    void createMainThread();
+    dap::Thread getCurrentThread();
+
 private:
     DebuggerDelegate::WPtrT     _delegate;
 
@@ -74,6 +80,9 @@ private:
     std::string                 _sourceContent;
 
     std::unordered_set<int64_t> _breakpoints;
+
+    std::vector<dap::Thread>    _threads;
+
 };
 
 

@@ -11,10 +11,8 @@
 
 #include <dap/typeof.h>
 
-const dap::integer threadId = 100;
 const dap::integer frameId = 200;
 const dap::integer variablesReferenceId = 300;
-const dap::integer sourceReferenceId = 400;
 
 namespace
 {
@@ -75,10 +73,7 @@ void Controller::init()
         [&](const dap::ThreadsRequest&)
         {
             dap::ThreadsResponse response;
-            dap::Thread thread;
-            thread.id = threadId;
-            thread.name = "TheThread";
-            response.threads.push_back(thread);
+            response.threads = _debugger->getThreads();
             return response;
         });
 
@@ -90,13 +85,15 @@ void Controller::init()
         [&](const dap::StackTraceRequest& request)
             -> dap::ResponseOrError<dap::StackTraceResponse>
             {
-                if (request.threadId != threadId)
+                dap::Thread currentThread = _debugger->getCurrentThread();
+
+                if (request.threadId != currentThread.id)
                 {
                     return dap::Error("Unknown threadId '%d'", int(request.threadId));
                 }
 
                 dap::Source source;
-                source.sourceReference = sourceReferenceId;
+                source.sourceReference = _debugger->getSourceReferenceId();
                 source.name = "HelloDebuggerSource";
 
                 dap::StackFrame frame;
@@ -219,7 +216,7 @@ void Controller::init()
             dap::SetBreakpointsResponse response;
 
             auto breakpoints = request.breakpoints.value({});
-            if (request.source.sourceReference.value(0) == sourceReferenceId)
+            if (request.source.sourceReference.value(0) == _debugger->getSourceReferenceId())
             {
                 _debugger->clearBreakpoints();
                 response.breakpoints.resize(breakpoints.size());
@@ -254,7 +251,7 @@ void Controller::init()
         [&](const dap::SourceRequest& request)
             -> dap::ResponseOrError<dap::SourceResponse>
             {
-                if (request.sourceReference != sourceReferenceId)
+                if (request.sourceReference != _debugger->getSourceReferenceId())
                 {
                     return dap::Error("Unknown source reference '%d'",
                         int(request.sourceReference));
@@ -310,7 +307,9 @@ void Controller::onBreakpointHit()
     // The debugger has been suspended. Inform the client.
     dap::StoppedEvent event;
     event.reason = "pause";
-    event.threadId = threadId;
+    dap::Thread currentThread = _debugger->getCurrentThread();
+
+    event.threadId = currentThread.id;
     _session->send(event);
 }
 
@@ -320,7 +319,9 @@ void Controller::onStepped()
     // The debugger has single-line stepped. Inform the client.
     dap::StoppedEvent event;
     event.reason = "step";
-    event.threadId = threadId;
+    dap::Thread currentThread = _debugger->getCurrentThread();
+
+    event.threadId = currentThread.id;
     _session->send(event);
 }
 
@@ -329,7 +330,9 @@ void Controller::onPaused()
     // The debugger has been suspended. Inform the client.
     dap::StoppedEvent event;
     event.reason = "pause";
-    event.threadId = threadId;
+    dap::Thread currentThread = _debugger->getCurrentThread();
+
+    event.threadId = currentThread.id;
     _session->send(event);
 }
 
@@ -371,12 +374,12 @@ void Controller::waitConfigured()
     _configured.wait();
 }
 
-void Controller::threadStarted()
+void Controller::threadStarted(int64_t aThreadId)
 {
     // Broadcast the existance of the single thread to the client.
     dap::ThreadEvent threadStartedEvent;
     threadStartedEvent.reason = "started";
-    threadStartedEvent.threadId = threadId;
+    threadStartedEvent.threadId = aThreadId;
     _session->send(threadStartedEvent);
 }
 

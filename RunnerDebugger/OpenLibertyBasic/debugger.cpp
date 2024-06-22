@@ -22,6 +22,7 @@ Debugger::Debugger()
     , _breakpoints()
     , _sourcePath()
     , _sourceContent()
+    , _threads()
 {
 
 }
@@ -116,6 +117,35 @@ bool Debugger::loadSourceAtPath(const std::string &aSourcePath)
 
 void Debugger::start(bool aStopOnNetry)
 {
+    createMainThread();
     _line = 1;
 
+}
+
+int Debugger::getSourceReferenceId()
+{
+    return 1;
+}
+
+std::vector<dap::Thread> Debugger::getThreads()
+{
+    return _threads;
+}
+
+void Debugger::createMainThread()
+{
+    dap::Thread thread;
+    thread.id = 1;
+    thread.name = "main";
+    if (auto delegate = _delegate.lock())
+    {
+        delegate->threadStarted(thread.id);
+    }
+
+    _threads.push_back(thread);
+}
+
+dap::Thread Debugger::getCurrentThread()
+{
+    return _threads.back();
 }

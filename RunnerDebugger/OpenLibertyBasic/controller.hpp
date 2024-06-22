@@ -29,7 +29,7 @@ public:
     ~Controller();
 
     void waitConfigured();
-    void threadStarted();
+    void threadStarted(int64_t aThreadId);
     void pause();
     void waitTerminate();
 

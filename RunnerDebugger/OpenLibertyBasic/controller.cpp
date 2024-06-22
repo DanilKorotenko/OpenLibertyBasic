@@ -355,12 +355,14 @@ void Controller::output(const std::string msg, ...)
         va_start(args, msg);
         requiredSize = vsnprintf(&formattedOutput[0], static_cast<size_t>(size), msg.c_str(), args);
         va_end(args);
-
     }
     while (requiredSize < 0 || requiredSize >= size);
 
+    std::string outputString(formattedOutput.get());
+    outputString+="\n";
+
     dap::OutputEvent outputEvent;
-    outputEvent.output = std::string(formattedOutput.get());
+    outputEvent.output = outputString;
     _session->send(outputEvent);
 }
 

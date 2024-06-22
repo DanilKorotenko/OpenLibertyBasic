@@ -46,6 +46,8 @@ private:
 
     dap::InitializeResponse initializeRequest(const dap::InitializeRequest&);
     dap::LaunchResponse launchRequest(const dap::LBLaunchRequest &request);
+    dap::StackTraceResponse stackTraceRequest(const dap::StackTraceRequest &request);
+    dap::ThreadsResponse threadsRequest(const dap::ThreadsRequest&);
 
 private:
     Debugger::PtrT                  _debugger;

@@ -14,14 +14,6 @@
 const dap::integer frameId = 200;
 const dap::integer variablesReferenceId = 300;
 
-namespace
-{
-
-    // Total number of newlines in source.
-    constexpr int64_t numSourceLines = 7;
-
-}  // anonymous namespace
-
 Controller::PtrT Controller::create()
 {
     Controller::PtrT result = std::make_shared<Controller>();
@@ -66,16 +58,8 @@ void Controller::init()
     _session->registerHandler([&](const dap::LBLaunchRequest &request)
         { return launchRequest(request); });
 
-    // The Threads request queries the debugger's list of active threads.
-    // This example debugger only exposes a single thread.
-    // https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Threads
-    _session->registerHandler(
-        [&](const dap::ThreadsRequest&)
-        {
-            dap::ThreadsResponse response;
-            response.threads = _debugger->getThreads();
-            return response;
-        });
+    _session->registerHandler([&](const dap::ThreadsRequest &request)
+        { return threadsRequest(request); });
 
     // The StackTrace request reports the stack frames (call stack) for a given
     // thread. This example debugger only exposes a single stack frame for the
@@ -84,29 +68,7 @@ void Controller::init()
     _session->registerHandler(
         [&](const dap::StackTraceRequest& request)
             -> dap::ResponseOrError<dap::StackTraceResponse>
-            {
-                dap::Thread currentThread = _debugger->getCurrentThread();
-
-                if (request.threadId != currentThread.id)
-                {
-                    return dap::Error("Unknown threadId '%d'", int(request.threadId));
-                }
-
-                dap::Source source;
-                source.sourceReference = _debugger->getSourceReferenceId();
-                source.name = "HelloDebuggerSource";
-
-                dap::StackFrame frame;
-                frame.line = _debugger->currentLine();
-                frame.column = 1;
-                frame.name = "HelloDebugger";
-                frame.id = frameId;
-                frame.source = source;
-
-                dap::StackTraceResponse response;
-                response.stackFrames.push_back(frame);
-                return response;
-            });
+            { return stackTraceRequest(request); });
 
     // The Scopes request reports all the scopes of the given stack frame.
     // This example debugger only exposes a single 'Locals' scope for the single
@@ -223,7 +185,7 @@ void Controller::init()
                 for (size_t i = 0; i < breakpoints.size(); i++)
                 {
                     _debugger->addBreakpoint(breakpoints[i].line);
-                    response.breakpoints[i].verified = breakpoints[i].line < numSourceLines;
+//                    response.breakpoints[i].verified = breakpoints[i].line < numSourceLines;
                 }
             }
             else
@@ -308,7 +270,6 @@ void Controller::onBreakpointHit()
     dap::StoppedEvent event;
     event.reason = "pause";
     dap::Thread currentThread = _debugger->getCurrentThread();
-
     event.threadId = currentThread.id;
     _session->send(event);
 }
@@ -320,7 +281,6 @@ void Controller::onStepped()
     dap::StoppedEvent event;
     event.reason = "step";
     dap::Thread currentThread = _debugger->getCurrentThread();
-
     event.threadId = currentThread.id;
     _session->send(event);
 }
@@ -331,7 +291,6 @@ void Controller::onPaused()
     dap::StoppedEvent event;
     event.reason = "pause";
     dap::Thread currentThread = _debugger->getCurrentThread();
-
     event.threadId = currentThread.id;
     _session->send(event);
 }
@@ -411,4 +370,32 @@ dap::LaunchResponse Controller::launchRequest(const dap::LBLaunchRequest &reques
     _debugger->launch(request.program.c_str(), request.stopOnEntry);
 
     return dap::LaunchResponse();
+}
+
+// The Threads request queries the debugger's list of active threads.
+// This example debugger only exposes a single thread.
+// https://microsoft.github.io/debug-adapter-protocol/specification#Requests_Threads
+dap::ThreadsResponse Controller::threadsRequest(const dap::ThreadsRequest&)
+{
+    dap::ThreadsResponse response;
+    response.threads = _debugger->getThreads();
+    return response;
+};
+
+dap::StackTraceResponse Controller::stackTraceRequest(const dap::StackTraceRequest &request)
+{
+    dap::Source source;
+    source.sourceReference = _debugger->getSourceReferenceId();
+    source.name = "HelloDebuggerSource";
+
+    dap::StackFrame frame;
+    frame.line = _debugger->currentLine();
+    frame.column = 1;
+    frame.name = "HelloDebugger";
+    frame.id = frameId;
+    frame.source = source;
+
+    dap::StackTraceResponse response;
+    response.stackFrames.push_back(frame);
+    return response;
 }

@@ -29,7 +29,6 @@ public:
     ~Controller();
 
     void waitConfigured();
-    void threadStarted(int64_t aThreadId);
     void waitTerminate();
 
 private:
@@ -38,7 +37,9 @@ private:
     void onBreakpointHit();
     void onStepped();
     void onPaused();
-
+    void onThreadStarted(int64_t aThreadId);
+    void onTerminated();
+    void onExited();
     void onSessionError(const char *msg);
 
     void output(const std::string msg, ...);

@@ -295,6 +295,28 @@ void Controller::onPaused()
     _session->send(event);
 }
 
+void Controller::onThreadStarted(int64_t aThreadId)
+{
+    // Broadcast the existance of the single thread to the client.
+    dap::ThreadEvent threadStartedEvent;
+    threadStartedEvent.reason = "started";
+    threadStartedEvent.threadId = aThreadId;
+    _session->send(threadStartedEvent);
+}
+
+void Controller::onTerminated()
+{
+    dap::TerminatedEvent event;
+    _session->send(event);
+}
+
+void Controller::onExited()
+{
+    dap::ExitedEvent event;
+    event.exitCode = 0;
+    _session->send(event);
+}
+
 void Controller::onSessionError(const char *msg)
 {
     _terminate.fire();
@@ -331,15 +353,6 @@ void Controller::output(const std::string msg, ...)
 void Controller::waitConfigured()
 {
     _configured.wait();
-}
-
-void Controller::threadStarted(int64_t aThreadId)
-{
-    // Broadcast the existance of the single thread to the client.
-    dap::ThreadEvent threadStartedEvent;
-    threadStartedEvent.reason = "started";
-    threadStartedEvent.threadId = aThreadId;
-    _session->send(threadStartedEvent);
 }
 
 void Controller::waitTerminate()

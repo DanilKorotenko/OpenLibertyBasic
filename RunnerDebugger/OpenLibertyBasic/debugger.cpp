@@ -8,45 +8,31 @@
 #include "debugger.hpp"
 
 #include <fstream>
+#include <sstream>
+#include <thread>
 
-namespace
-{
-
-    // Total number of newlines in source.
-    constexpr int64_t numSourceLines = 7;
-}
+#include "StringUtils.hpp"
 
 Debugger::Debugger()
     : _mutex()
     , _line(0)
+    , _currentSource(nullptr)
     , _breakpoints()
     , _threads()
+    , _paused(false)
+    , _allowStep(false)
 {
 
 }
 
 void Debugger::run()
 {
-    std::unique_lock<std::mutex> lock(_mutex);
-
-    for (int64_t i = 0; i < numSourceLines; i++)
-    {
-        int64_t l = ((_line + i) % numSourceLines) + 1;
-        if (_breakpoints.count(l))
-        {
-            _line = l;
-            lock.unlock();
-            if (auto delegate = _delegate.lock())
-            {
-                delegate->onBreakpointHit();
-            }
-            return;
-        }
-    }
+    start(false);
 }
 
 void Debugger::pause()
 {
+    _paused.store(true);
     if (auto delegate = _delegate.lock())
     {
         delegate->onPaused();
@@ -62,12 +48,8 @@ int64_t Debugger::currentLine()
 void Debugger::stepForward()
 {
     std::unique_lock<std::mutex> lock(_mutex);
-    _line = (_line % numSourceLines) + 1;
-    lock.unlock();
-    if (auto delegate = _delegate.lock())
-    {
-        delegate->onStepped();
-    }
+    _allowStep = true;
+    _allowStepCondVar.notify_all();
 }
 
 void Debugger::clearBreakpoints()
@@ -101,6 +83,42 @@ void Debugger::start(bool aStopOnNetry)
     {
         pause();
     }
+
+    std::thread thr (&Debugger::execute, this);
+    thr.detach();
+}
+
+void Debugger::execute()
+{
+    std::istringstream istr(_currentSource->content());
+    std::string line;
+    while (std::getline(istr, line))
+    {
+        StringUtils::trim(line);
+        if (!line.empty())
+        {
+            if (_paused.load())
+            {
+                std::unique_lock<std::mutex> lock(_mutex);
+                _allowStepCondVar.wait(lock,[this](){return _allowStep;});
+            }
+        }
+
+        _allowStep = false;
+        _line++;
+        if (auto delegate = _delegate.lock())
+        {
+            delegate->onStepped();
+        }
+    }
+    if (auto delegate = _delegate.lock())
+    {
+        delegate->onTerminated();
+    }
+    if (auto delegate = _delegate.lock())
+    {
+        delegate->onExited();
+    }
 }
 
 std::vector<dap::Thread> Debugger::getThreads()
@@ -115,7 +133,7 @@ void Debugger::createMainThread()
     thread.name = "main";
     if (auto delegate = _delegate.lock())
     {
-        delegate->threadStarted(thread.id);
+        delegate->onThreadStarted(thread.id);
     }
 
     _threads.push_back(thread);

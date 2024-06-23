@@ -13,6 +13,7 @@
 		DA7D4B072BD415EC007C646B /* libcppdap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA7D4B052BD415EC007C646B /* libcppdap.a */; };
 		DA7D4B0A2BD416EE007C646B /* debugger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7D4B082BD416EE007C646B /* debugger.cpp */; };
 		DA7D4B0D2BD51F97007C646B /* event.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA7D4B0B2BD51F97007C646B /* event.cpp */; };
+		DAD906FA2C283C2E005EBB6E /* Source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAD906F82C283C2E005EBB6E /* Source.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,6 +54,8 @@
 		DA7D4B092BD416EE007C646B /* debugger.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = debugger.hpp; sourceTree = "<group>"; };
 		DA7D4B0B2BD51F97007C646B /* event.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = event.cpp; sourceTree = "<group>"; };
 		DA7D4B0C2BD51F97007C646B /* event.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = event.hpp; sourceTree = "<group>"; };
+		DAD906F82C283C2E005EBB6E /* Source.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Source.cpp; sourceTree = "<group>"; };
+		DAD906F92C283C2E005EBB6E /* Source.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Source.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +75,8 @@
 			children = (
 				DA2D1FD92C0CA568003D37C9 /* LBLaunchRequest.cpp */,
 				DA2D1FDA2C0CA568003D37C9 /* LBLaunchRequest.hpp */,
+				DAD906F82C283C2E005EBB6E /* Source.cpp */,
+				DAD906F92C283C2E005EBB6E /* Source.hpp */,
 			);
 			path = types;
 			sourceTree = "<group>";
@@ -223,6 +228,7 @@
 				DA7D4B0D2BD51F97007C646B /* event.cpp in Sources */,
 				DA72B6542BD413EF009D3CEB /* main.cpp in Sources */,
 				DA2D1FDB2C0CA568003D37C9 /* LBLaunchRequest.cpp in Sources */,
+				DAD906FA2C283C2E005EBB6E /* Source.cpp in Sources */,
 				DA000D2F2BF2754300BAE1BE /* controller.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

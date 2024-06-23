@@ -18,6 +18,8 @@
 #include <unordered_set>
 #include <filesystem>
 
+#include "types/Source.hpp"
+
 class DebuggerDelegate
 {
 public:
@@ -47,8 +49,8 @@ public:
 
     // currentLine() returns the currently executing line number.
     int64_t currentLine();
-    int getSourceReferenceId();
-    std::string getSourceContent();
+
+    Source::PtrT getCurrentSource() { return _currentSource; }
 
     // stepForward() instructs the debugger to step forward one line.
     void stepForward();
@@ -64,8 +66,6 @@ public:
     void launch(const std::string &aSourcePath, bool aStopOnNetry);
     void start(bool aStopOnNetry);
 
-    bool loadSourceAtPath(const std::string &aSourcePath);
-
     std::vector<dap::Thread> getThreads();
     void createMainThread();
     dap::Thread getCurrentThread();
@@ -76,14 +76,11 @@ private:
     std::mutex                  _mutex;
 
     int64_t                     _line = 1;
-    std::filesystem::path       _sourcePath;
-    std::string                 _sourceContent;
+    Source::PtrT                _currentSource;
 
     std::unordered_set<int64_t> _breakpoints;
 
     std::vector<dap::Thread>    _threads;
-
 };
-
 
 #endif /* debugger_hpp */

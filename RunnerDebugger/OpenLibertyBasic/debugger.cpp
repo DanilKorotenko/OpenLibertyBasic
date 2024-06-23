@@ -20,8 +20,6 @@ Debugger::Debugger()
     : _mutex()
     , _line(0)
     , _breakpoints()
-    , _sourcePath()
-    , _sourceContent()
     , _threads()
 {
 
@@ -61,11 +59,6 @@ int64_t Debugger::currentLine()
     return _line;
 }
 
-std::string Debugger::getSourceContent()
-{
-    return _sourceContent;
-}
-
 void Debugger::stepForward()
 {
     std::unique_lock<std::mutex> lock(_mutex);
@@ -96,23 +89,8 @@ void Debugger::setDelegate(const DebuggerDelegate::WPtrT &aDelegate)
 
 void Debugger::launch(const std::string &aSourcePath, bool aStopOnNetry)
 {
-    loadSourceAtPath(aSourcePath);
+    _currentSource = std::make_shared<Source>(aSourcePath);
     start(aStopOnNetry);
-}
-
-bool Debugger::loadSourceAtPath(const std::string &aSourcePath)
-{
-    _sourcePath = aSourcePath;
-
-    std::ifstream sourceFile(aSourcePath, std::ios::in);
-    if (!sourceFile.is_open())
-    {
-        return false;
-    }
-    _sourceContent = std::string(std::istreambuf_iterator<char>(sourceFile), std::istreambuf_iterator<char>());
-    sourceFile.close();
-
-    return true;
 }
 
 void Debugger::start(bool aStopOnNetry)
@@ -120,11 +98,6 @@ void Debugger::start(bool aStopOnNetry)
     createMainThread();
     _line = 1;
 
-}
-
-int Debugger::getSourceReferenceId()
-{
-    return 1;
 }
 
 std::vector<dap::Thread> Debugger::getThreads()

@@ -178,7 +178,7 @@ void Controller::init()
             dap::SetBreakpointsResponse response;
 
             auto breakpoints = request.breakpoints.value({});
-            if (request.source.sourceReference.value(0) == _debugger->getSourceReferenceId())
+            if (request.source.sourceReference.value(0) == _debugger->getCurrentSource()->referenceId())
             {
                 _debugger->clearBreakpoints();
                 response.breakpoints.resize(breakpoints.size());
@@ -213,14 +213,14 @@ void Controller::init()
         [&](const dap::SourceRequest& request)
             -> dap::ResponseOrError<dap::SourceResponse>
             {
-                if (request.sourceReference != _debugger->getSourceReferenceId())
+                if (request.sourceReference != _debugger->getCurrentSource()->referenceId())
                 {
                     return dap::Error("Unknown source reference '%d'",
                         int(request.sourceReference));
                 }
 
                 dap::SourceResponse response;
-                response.content = _debugger->getSourceContent();
+                response.content = _debugger->getCurrentSource()->content();
                 return response;
             });
 
@@ -385,7 +385,7 @@ dap::ThreadsResponse Controller::threadsRequest(const dap::ThreadsRequest&)
 dap::StackTraceResponse Controller::stackTraceRequest(const dap::StackTraceRequest &request)
 {
     dap::Source source;
-    source.sourceReference = _debugger->getSourceReferenceId();
+    source.sourceReference = _debugger->getCurrentSource()->referenceId();
     source.name = "HelloDebuggerSource";
 
     dap::StackFrame frame;

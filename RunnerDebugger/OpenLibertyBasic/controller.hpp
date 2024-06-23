@@ -30,7 +30,6 @@ public:
 
     void waitConfigured();
     void threadStarted(int64_t aThreadId);
-    void pause();
     void waitTerminate();
 
 private:

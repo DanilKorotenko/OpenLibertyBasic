@@ -97,7 +97,10 @@ void Debugger::start(bool aStopOnNetry)
 {
     createMainThread();
     _line = 1;
-
+    if (aStopOnNetry)
+    {
+        pause();
+    }
 }
 
 std::vector<dap::Thread> Debugger::getThreads()

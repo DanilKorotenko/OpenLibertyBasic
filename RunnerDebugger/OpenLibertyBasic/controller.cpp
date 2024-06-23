@@ -342,11 +342,6 @@ void Controller::threadStarted(int64_t aThreadId)
     _session->send(threadStartedEvent);
 }
 
-void Controller::pause()
-{
-    _debugger->pause();
-}
-
 void Controller::waitTerminate()
 {
     _terminate.wait();

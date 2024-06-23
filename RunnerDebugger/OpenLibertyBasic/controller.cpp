@@ -384,16 +384,12 @@ dap::ThreadsResponse Controller::threadsRequest(const dap::ThreadsRequest&)
 
 dap::StackTraceResponse Controller::stackTraceRequest(const dap::StackTraceRequest &request)
 {
-    dap::Source source;
-    source.sourceReference = _debugger->getCurrentSource()->referenceId();
-    source.name = "HelloDebuggerSource";
-
     dap::StackFrame frame;
     frame.line = _debugger->currentLine();
     frame.column = 1;
     frame.name = "HelloDebugger";
     frame.id = frameId;
-    frame.source = source;
+    frame.source = _debugger->getCurrentSource()->getDapSource();
 
     dap::StackTraceResponse response;
     response.stackFrames.push_back(frame);

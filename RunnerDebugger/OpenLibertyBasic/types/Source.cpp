@@ -18,3 +18,11 @@ Source::Source(const std::string &aSourcePath)
         sourceFile.close();
     }
 }
+
+dap::Source Source::getDapSource()
+{
+    dap::Source source;
+    source.sourceReference = referenceId();
+    source.name = _path.filename();
+    return source;
+}
